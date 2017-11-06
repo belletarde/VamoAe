@@ -18,7 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
+public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder>{
     private Context context;
     private List<Events> eventsList;
 
@@ -37,7 +37,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
     @Override
     public void onBindViewHolder(final EventListAdapter.ViewHolder holder, int position) {
         Events event = eventsList.get(position);
-        Picasso.with(context).load(event.getImg()).centerCrop().into(holder.imgEvent);
+        Picasso.with(context).load(event.getImg()).into(holder.imgEvent);
         holder.title.setText(event.getName());
         holder.detail.setText(event.getCity()+" - "+event.getUf());
         holder.score.setText("total: "+ (event.getLike() - event.getDeslike()));
@@ -45,7 +45,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
 
     @Override
     public int getItemCount() {
-        return 0;
+        return eventsList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
