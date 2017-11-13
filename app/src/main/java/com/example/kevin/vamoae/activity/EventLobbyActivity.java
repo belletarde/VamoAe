@@ -4,13 +4,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.LinearLayout;
+
 
 import com.example.kevin.vamoae.R;
 import com.example.kevin.vamoae.adapter.EventListAdapter;
-import com.example.kevin.vamoae.api.RetrofitApiCall.EventsApiCall;
 import com.example.kevin.vamoae.api.RetrofitInitializer;
+import com.example.kevin.vamoae.model.Events;
 import com.example.kevin.vamoae.model.EventsResponse;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,9 +24,22 @@ import retrofit2.Response;
 
 public class EventLobbyActivity extends AppCompatActivity {
 
-
     @BindView(R.id.recycler_event_list)
     RecyclerView recyclerEvent;
+
+    @BindView(R.id.loading_view)
+    LinearLayout loadingView;
+
+
+    private  LinearLayoutManager layoutManager;
+    private int page = 1;
+    private int maxPage;
+    private EventListAdapter adapter;
+    private ArrayList<Events> events = new ArrayList<>();
+    private boolean loading = true;
+    private int previousTotal = 0;
+    int visibleThreshold = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,26 +47,72 @@ public class EventLobbyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_lobby);
 
         ButterKnife.bind(this);
+
+        getEvents();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        getAllEvents(1);
     }
 
-    public void getAllEvents(int page) {
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+    public void setEventList(){
+        adapter = new EventListAdapter(EventLobbyActivity.this, events);
+        recyclerEvent.setAdapter(adapter);
+        recyclerEvent.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+//
+//                int visibleItemCount = layoutManager.getChildCount();
+//                int totalItemCount = layoutManager.getItemCount();
+//                int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+//
+//                if (loading){
+//                    if (totalItemCount > previousTotal){
+//                        loading = false;
+//                        previousTotal = totalItemCount;
+//                        page++;
+//                    }
+//                }
+//                if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+//                    getEvents();
+//                    loading = true;
+//                }
+//
+            }
+        });
+    }
+
+    public void setRecycler(){
+        layoutManager = new LinearLayoutManager(EventLobbyActivity.this, LinearLayoutManager.VERTICAL, false);
+        recyclerEvent.setLayoutManager(layoutManager);
+        recyclerEvent.setNestedScrollingEnabled(false);
+    }
+
+    public void getEvents() {
+
         Call<EventsResponse> call = new RetrofitInitializer().retrofitApiPath().getEvents(page);
         call.enqueue(new Callback<EventsResponse>() {
             @Override
             public void onResponse(Call<EventsResponse> call, Response<EventsResponse> response) {
-                Toast.makeText(EventLobbyActivity.this, response.body().getEventsList().get(0).getName(), Toast.LENGTH_SHORT).show();
-               setPhraseRecycler();
+                loadingView.setVisibility(View.GONE);
+                recyclerEvent.setVisibility(View.VISIBLE);
+                setRecycler();
 
-               EventListAdapter adapter = new EventListAdapter(EventLobbyActivity.this, response.body().getEventsList());
-               recyclerEvent.setAdapter(adapter);
-
-
+                events.addAll(response.body().getEventsList());
+                if(page == 1) {
+                    setEventList();
+                }
+                else{
+                    adapter.notifyItemRangeInserted(0, events.size() - 1);
+                }
             }
 
             @Override
@@ -58,14 +121,5 @@ public class EventLobbyActivity extends AppCompatActivity {
             }
         });
     }
-
-        private void setPhraseRecycler(){
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-            recyclerEvent.setLayoutManager(layoutManager);
-            recyclerEvent.setNestedScrollingEnabled(false);
-    }
-
-
-
 
 }

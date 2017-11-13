@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/img_list_event"
         android:layout_width="385dp"
-        android:layout_height="139dp"
+        android:layout_height="200dp"
         android:layout_marginEnd="8dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
@@ -31,27 +31,36 @@
         app:layout_constraintVertical_bias="0.499" />
 
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="102dp"
+
+        android:background="@drawable/shadow_center_home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ImageView
         android:id="@+id/btn_deslike_list_event"
         android:layout_width="wrap_content"
-        android:padding="3dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="88dp"
-        android:rotation="180"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="140dp"
         android:background="@drawable/bg_circle_shadow"
+        android:padding="3dp"
+        android:rotation="180"
         android:src="@drawable/ic_action_like"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:padding="3dp"
         android:id="@+id/btn_like_list_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="140dp"
         android:background="@drawable/bg_circle_shadow"
+        android:padding="3dp"
         android:src="@drawable/ic_action_like"
         app:layout_constraintEnd_toStartOf="@+id/btn_deslike_list_event"
         app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +70,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="112dp"
+        android:maxLines="1"
         android:text="Escalada topperson"
         android:textColor="#ffff"
         android:textSize="18dp"
@@ -73,7 +83,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="132dp"
         android:text="São Paulo - SP"
         android:textColor="#ffff"
         android:textSize="12dp"
@@ -82,13 +92,13 @@
 
     <TextView
         android:id="@+id/txt_like_number_list_event"
-        android:textSize="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="52dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="12dp"
         android:text="199"
         android:textColor="#ffff"
+        android:textSize="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_detail_list_event" />
 
@@ -96,8 +106,8 @@
         android:id="@+id/imageView2"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginTop="5dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="@+id/img_list_event"
         app:layout_constraintTop_toBottomOf="@+id/txt_detail_list_event"
         app:srcCompat="@drawable/ic_action_like" />

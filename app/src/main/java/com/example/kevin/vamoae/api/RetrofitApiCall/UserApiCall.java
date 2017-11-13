@@ -8,6 +8,7 @@ import com.example.kevin.vamoae.activity.SignInActivity;
 import com.example.kevin.vamoae.api.RetrofitInitializer;
 import com.example.kevin.vamoae.model.UserLoginResponse;
 import com.example.kevin.vamoae.model.UserRegisterResponse;
+import com.example.kevin.vamoae.Utils.UserSingleton;
 
 import java.util.Map;
 
@@ -37,6 +38,10 @@ public class UserApiCall {
                     case 200:{
                         if(response.body().getSuccess() != null){
                             Toast.makeText(mActivity, response.body().getSuccess(), Toast.LENGTH_SHORT).show();
+
+                            UserSingleton user = UserSingleton.getInstance();
+                            user.setToken(response.body().getUser().get(0).getApiUserToken());
+
                         }else {
                             Toast.makeText(mActivity, response.body().getError(), Toast.LENGTH_SHORT).show();
                         }

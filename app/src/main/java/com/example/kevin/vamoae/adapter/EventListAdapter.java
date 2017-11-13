@@ -1,24 +1,30 @@
 package com.example.kevin.vamoae.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.kevin.vamoae.R;
+import com.example.kevin.vamoae.Utils.UserSingleton;
+import com.example.kevin.vamoae.activity.EventDetailActivity;
+import com.example.kevin.vamoae.api.RetrofitApiCall.LikeAndDeslikeApiCall;
 import com.example.kevin.vamoae.model.Events;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder> {
+public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.ViewHolder>{
     private Context context;
     private List<Events> eventsList;
 
@@ -36,16 +42,62 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
 
     @Override
     public void onBindViewHolder(final EventListAdapter.ViewHolder holder, int position) {
-        Events event = eventsList.get(position);
-        Picasso.with(context).load(event.getImg()).centerCrop().into(holder.imgEvent);
+        final Events event = eventsList.get(position);
+        Picasso.with(context).load(event.getImg()).error( R.drawable.bg_img_404 )
+                .placeholder( R.drawable.bg_img_loading ).into(holder.imgEvent);
         holder.title.setText(event.getName());
         holder.detail.setText(event.getCity()+" - "+event.getUf());
         holder.score.setText("total: "+ (event.getLike() - event.getDeslike()));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(context, EventDetailActivity.class);
+                i.putExtra("id", event.getId());
+                context.startActivity(i);
+            }
+        });
+
+        final HashMap<String,String> likeData = new HashMap<>();
+        final UserSingleton userData = UserSingleton.getInstance();
+        final String token = userData.getToken();
+
+        final LikeAndDeslikeApiCall likeOrDeslike = new LikeAndDeslikeApiCall();
+
+        holder.like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(token != null){
+                    likeData.put("id",event.getId());
+                    likeData.put("like","1");
+                    likeData.put("api_token",token);
+
+                    likeOrDeslike.loginCall("like",likeData,context);
+
+                }else {
+                    Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        holder.deslike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(token != null){
+                    likeData.put("id",event.getId());
+                    likeData.put("deslike","1");
+                    likeData.put("api_token",token);
+                    likeOrDeslike.loginCall("deslike",likeData,context);
+                }else {
+                    Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return eventsList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

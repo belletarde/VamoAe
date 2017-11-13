@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">VamoAe</string>
+    <string name="title_activity_event_detail">EventDetailActivity</string>
+    <!--<string name="google_maps_key">AIzaSyDVGX1D-q4oHRWMjZ18YQlY9xpIIkcuzyk</string>-->
+    <string name="google_maps_key">AIzaSyB6lYEweDg6g9jbHuNs1h954v5pp8uaiFg</string>
+    <string name="google_cordinates_key">AIzaSyC4uK67uZMUvRpk6f1R6p3ZJhjA97O3qco</string>
 </resources>

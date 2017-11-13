@@ -11,6 +11,7 @@ import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -28,4 +29,15 @@ public interface RetrofitApiPath {
 
     @GET("eventos")
     Call<EventsResponse> getEvents(@Query("page") int page);
+
+    @GET("eventos/{id}")
+    Call<EventsResponse> getEventDetail(@Path("id") String id);
+
+    @FormUrlEncoded
+    @POST("like")
+    Call <UserLoginResponse> sendLike(@FieldMap Map<String,String> registerData);
+
+    @FormUrlEncoded
+    @POST("deslike")
+    Call <UserLoginResponse> sendDeslike(@FieldMap Map<String,String> registerData);
 }
