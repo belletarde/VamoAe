@@ -1,8 +1,10 @@
 package com.example.kevin.vamoae.api.RetrofitApiCall;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.widget.Toast;
 
+import com.example.kevin.vamoae.activity.EventLobbyActivity;
 import com.example.kevin.vamoae.activity.MainActivity;
 import com.example.kevin.vamoae.activity.SignInActivity;
 import com.example.kevin.vamoae.api.RetrofitInitializer;
@@ -37,10 +39,11 @@ public class UserApiCall {
                 switch (response.code()){
                     case 200:{
                         if(response.body().getSuccess() != null){
-                            Toast.makeText(mActivity, response.body().getSuccess(), Toast.LENGTH_SHORT).show();
-
                             UserSingleton user = UserSingleton.getInstance();
                             user.setToken(response.body().getUser().get(0).getApiUserToken());
+
+                            Intent i = new Intent(mActivity, EventLobbyActivity.class);
+                            mActivity.startActivity(i);
 
                         }else {
                             Toast.makeText(mActivity, response.body().getError(), Toast.LENGTH_SHORT).show();
@@ -62,10 +65,10 @@ public class UserApiCall {
         });
     }
 
-    public void registerUser(Map<String,String> registerUserData, final SignInActivity mActivity){
+    public void registerUser(final Map<String,String> registerUserData, final SignInActivity mActivity){
 
         final ProgressDialog pgBar = new ProgressDialog(mActivity,0);
-        pgBar.setMessage("Autenticando...");
+        pgBar.setMessage("Registrando...");
         pgBar.show();
 
         retrofit2.Call<UserRegisterResponse> call = new RetrofitInitializer().retrofitApiPath().setUserRegister(registerUserData);
@@ -75,14 +78,18 @@ public class UserApiCall {
                 pgBar.hide();
 
                 if(response.isSuccessful()){
-                        if(response.body().getError() == null){
-                            Toast.makeText(mActivity, response.body().getSuccess(), Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(mActivity, "Erro inexperado ao registrar usuário.", Toast.LENGTH_SHORT).show();
-                        }
+
+                    Toast.makeText(mActivity, "Usuário criado com sucesso!", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(mActivity, MainActivity.class);
+                    i.putExtra("login",registerUserData.get("email"));
+                    mActivity.startActivity(i);
 
                     }else{
-                        Toast.makeText(mActivity, "Erro ao efetuar login.", Toast.LENGTH_SHORT).show();
+                        if(response.code() == 500){
+                            Toast.makeText(mActivity, "E-mail já cadastrado", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(mActivity, "Erro ao tentar registrar, tente novamente mais tarde.", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
             }

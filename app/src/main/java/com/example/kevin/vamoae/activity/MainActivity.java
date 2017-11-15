@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.kevin.vamoae.R;
 import com.example.kevin.vamoae.api.RetrofitApiCall.UserApiCall;
@@ -32,12 +33,27 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            String email = extras.getString("login");
+            txtLoginUser.setText(email);
+        }
+    }
 
     @OnClick(R.id.btn_enter_account)
     public void onEnterAccountClick(){
         //requisition
-        mLoginCall = new UserApiCall();
-        mLoginCall.loginCall(getLoginData(), this);
+
+        if(!(txtLoginUser.getText().toString().length() > 0 || txtPasswordUser.getText().toString().length() > 0)){
+            Toast.makeText(this, "Preencha os campos acima corretamente!", Toast.LENGTH_SHORT).show();
+        }else {
+            mLoginCall = new UserApiCall();
+            mLoginCall.loginCall(getLoginData(), this);
+        }
     }
 
     @OnClick(R.id.txt_create_account)
@@ -49,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Map<String,String> getLoginData(){
+
         HashMap<String,String> loginData = new HashMap<>();
         loginData.put("email",txtLoginUser.getText().toString());
         loginData.put("password",txtPasswordUser.getText().toString());

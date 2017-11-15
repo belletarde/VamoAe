@@ -35,6 +35,17 @@ public class Events {
     @SerializedName("ativo")
     @Expose
     private String active;
+    @SerializedName("liked")
+    @Expose
+    private int liked;
+
+    public int getLiked() {
+        return liked;
+    }
+
+    public void setLiked(int liked) {
+        this.liked = liked;
+    }
 
     public String getId() {
         return id;

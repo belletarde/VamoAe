@@ -18,15 +18,21 @@ public class IntroActivity extends AppCompatActivity {
         ButterKnife.bind(this);
     }
 
-    @OnClick(R.id.btn_login_user)
-    public void loginOnclick(){
-        Intent i = new Intent(this, MainActivity.class);
+    @OnClick(R.id.btn_signin_user)
+    public void signInOnclick(){
+        Intent i = new Intent(this, SignInActivity.class);
         startActivity(i);
     }
 
     @OnClick(R.id.btn_continue_without_login)
     public void continueOnClick(){
         Intent i = new Intent(this, EventLobbyActivity.class);
+        startActivity(i);
+    }
+
+    @OnClick(R.id.txt_to_login)
+    public void goToLogin(){
+        Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
     }
 }

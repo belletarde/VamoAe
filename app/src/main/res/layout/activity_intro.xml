@@ -8,40 +8,45 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:src="@mipmap/ic_launcher"
-        android:scaleType="centerCrop"/>
+        android:layout_height="100dp"
+        android:layout_margin="60dp"
+        android:src="@drawable/ic_launcher"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:id="@+id/btn_login_user"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Já tem uma conta?"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_continue_without_login"
-        android:text="Continuar sem login"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Usando nosso app, você aceita com nossos"/>
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:text="Cadastre-se"
+        android:textColor="@color/txtLightColor"
+        android:background="@color/colorPrimary"
+        android:id="@+id/btn_signin_user"/>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="66dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Já tem uma conta?"/>
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/txt_to_login"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/txt_term_of_use"
-            android:text="Termos de uso e "/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/txt_privacy_policy"
-            android:text="politica de privacidade"/>
+            android:textColor="@color/colorAccent"
+            android:text=" Clique aqui."/>
     </LinearLayout>
+
+    <Button
+        android:layout_marginTop="38dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:textColor="@color/txtLightColor"
+        android:background="@color/secondaryButtomGreyLighten"
+        android:id="@+id/btn_continue_without_login"
+        android:text="Continuar sem login"/>
+
 </LinearLayout>

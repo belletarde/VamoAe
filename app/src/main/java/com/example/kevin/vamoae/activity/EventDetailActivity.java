@@ -1,16 +1,17 @@
 package com.example.kevin.vamoae.activity;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.widget.ShareActionProvider;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,11 +20,13 @@ import android.widget.Toast;
 
 import com.example.kevin.vamoae.Manifest;
 import com.example.kevin.vamoae.R;
+import com.example.kevin.vamoae.Utils.UserSingleton;
 import com.example.kevin.vamoae.api.RetrofitInitializer;
+import com.example.kevin.vamoae.api.RetrofithGoogleApi;
 import com.example.kevin.vamoae.model.Events;
 import com.example.kevin.vamoae.model.EventsResponse;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.ShareButton;
+import com.example.kevin.vamoae.model.GoogleMapModel;
+import com.example.kevin.vamoae.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,6 +35,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,9 +59,17 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
     @BindView(R.id.img_list_event)
     ImageView imgBitMap;
 
-    Bitmap loadedImage;
+    @BindView(R.id.event_desc)
+    TextView descEvent;
 
+    @BindView(R.id.start_date)
+    TextView startDate;
 
+    @BindView(R.id.end_date)
+    TextView endDate;
+
+    private String faceLink, instaLink, siteLink;
+    private double lat, longi;
     private String id;
 
     @Override
@@ -65,15 +78,36 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
         setContentView(R.layout.activity_event_detail);
         ButterKnife.bind(this);
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-
 
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_items, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_share:{
+               shareEvent();
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override
@@ -82,17 +116,36 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
         Intent i = getIntent();
         id = i.getStringExtra("id");
         if (id != null) {
-            getEvents();
+            getEventDetail();
         }
 
     }
 
     private void setEventDetail(Events eventDetail) {
-        eventTitle.setText(eventDetail.getName());
+        eventTitle.setText(eventDetail.getName().toUpperCase());
+        descEvent.setText(eventDetail.getDescEvent());
+        startDate.setText(eventDetail.getStartDate());
+        endDate.setText(eventDetail.getFinalDate());
+        Picasso.with(this).load(eventDetail.getImg()).error( R.drawable.bg_img_404 )
+                .placeholder( R.drawable.bg_img_loading ).into(imgBitMap);
+
+        faceLink = eventDetail.getFacebook();
+        instaLink = eventDetail.getInstagram();
+        siteLink = eventDetail.getSite();
+
+
+        String address = eventDetail.getAddress()+
+                " "+eventDetail.getAddressNumber()+
+                " "+eventDetail.getDistrict()+
+                " "+eventDetail.getCity()+
+                " "+eventDetail.getUf()+
+                " "+"Brasil";
+
+        getCordinates(address);
 
     }
 
-    private void getEvents() {
+    private void getEventDetail() {
 
         Call<EventsResponse> call = new RetrofitInitializer().retrofitApiPath().getEventDetail(id);
         call.enqueue(new Callback<EventsResponse>() {
@@ -116,12 +169,47 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
-    //TODO: exemplo de chamada de latitude e longitude
-//https://maps.googleapis.com/maps/api/geocode/json?address=rua+padre+paulo+ravier+123+brasil+sao+paulo&key=AIzaSyC4uK67uZMUvRpk6f1R6p3ZJhjA97O3qco
+    public void getCordinatesApi(HashMap<String, String> map){
+        Call<GoogleMapModel> call = new RetrofithGoogleApi().retrofithGooglePath().getCordinate(map);
+        call.enqueue(new Callback<GoogleMapModel>() {
+            @Override
+            public void onResponse(Call<GoogleMapModel> call, Response<GoogleMapModel> response) {
+                if(response.isSuccessful()){
+
+                    if(response.body().getResults().size() > 0){
+                        lat = Double.parseDouble(response.body().getResults().get(0).getGeometry().getLocation().getLat());
+                        longi = Double.parseDouble(response.body().getResults().get(0).getGeometry().getLocation().getLng());
+
+                    }else {
+                        lat = -23.5505199;
+                        longi = -46.63330939999999;
+                    }
+                    SupportMapFragment mapFragment =
+                            (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                    mapFragment.getMapAsync(EventDetailActivity.this);
+                }else {
+                    Toast.makeText(EventDetailActivity.this, "Erro em conectar com google", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<GoogleMapModel> call, Throwable t) {
+
+            }
+        });
+
+    }
+    private void getCordinates(String address){
+        HashMap<String, String> map = new HashMap<>();
+        map.put("address", address);
+        map.put("key",getString(R.string.google_cordinates_key));
+        getCordinatesApi(map);
+    }
 
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng sydney = new LatLng(-23.4824827, -46.6285029);
+        LatLng sydney = new LatLng(lat, longi);
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
 
@@ -131,62 +219,26 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
                 .position(sydney));
     }
 
-    @OnClick(R.id.face)
     public void shareEvent() {
-
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, "Hey view/download this image");
-        String path = MediaStore.Images.Media.insertImage(getContentResolver(), loadedImage, "", null);
-        Uri screenshotUri = Uri.parse(path);
-
-        intent.putExtra(Intent.EXTRA_STREAM, screenshotUri);
-        intent.setType("image/*");
-        startActivity(Intent.createChooser(intent, "Share image via..."));
-    }
-
-    @OnClick(R.id.insta)
-    public void onShareEvent(){
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, "http://codepath.com");
         startActivity(Intent.createChooser(shareIntent, "Share link using"));
     }
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
 
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Picasso.with(this)
-                            .load("https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/220px-Image_created_with_a_mobile_phone.png")
-                            .into(new Target() {
-                                @Override
-                                public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-            /* Save the bitmap or do something with it here */
-
-                                    //Set it in the ImageView
-                                    loadedImage = bitmap;
-                                }
-
-                                @Override
-                                public void onBitmapFailed(Drawable errorDrawable) {
-
-                                }
-
-                                @Override
-                                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                                }
-                            });
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
+    @OnClick(R.id.insta)
+    public void onInstaClick(){
+        Toast.makeText(this, instaLink, Toast.LENGTH_SHORT).show();
     }
+
+    @OnClick(R.id.face)
+    public void onFaceClick(){
+        Toast.makeText(this, faceLink, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.web_site)
+    public void onWebSiteClick(){
+        Toast.makeText(this, siteLink, Toast.LENGTH_SHORT).show();
+    }
+
 }

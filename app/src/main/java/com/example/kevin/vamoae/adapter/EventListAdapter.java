@@ -72,7 +72,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                     likeData.put("like","1");
                     likeData.put("api_token",token);
 
-                    likeOrDeslike.loginCall("like",likeData,context);
+                    likeOrDeslike.likeCall("like",likeData,context,holder.score);
 
                 }else {
                     Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
@@ -87,7 +87,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                     likeData.put("id",event.getId());
                     likeData.put("deslike","1");
                     likeData.put("api_token",token);
-                    likeOrDeslike.loginCall("deslike",likeData,context);
+                    likeOrDeslike.likeCall("deslike",likeData,context,holder.score);
                 }else {
                     Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
                 }

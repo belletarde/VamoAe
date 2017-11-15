@@ -5,36 +5,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.kevin.vamoae.activity.EventDetailActivity">
-    <LinearLayout
-        android:id="@+id/loading_view_detail"
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3">
+        android:orientation="vertical">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Carregando detalhes do evento..."
-            android:textAlignment="center"
-            android:textColor="@color/colorAccent" />
-    </LinearLayout>
+            android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/loading_view_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3">
 
-    <LinearLayout
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Carregando detalhes do evento..."
+                android:textAlignment="center"
+                android:textColor="@color/colorAccent" />
+        </LinearLayout>
+
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         android:id="@+id/layout_detail_content"
         android:orientation="vertical">
 
@@ -50,76 +60,104 @@
             app:srcCompat="@drawable/trolltunga"
             tools:ignore="VectorDrawableCompat" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:id="@+id/event_title"
-        android:text="title"
-        />
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:id="@+id/event_desc"
-            android:text="Et voluptates quidem sunt est. Dolorem expedita libero et nemo reiciendis sint atque minima. Vitae ipsam vero quia impedit qui nihil dolorum. Impedit rerum consequatur iusto velit reiciendis ad vel."/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/social_media">
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="12dp"
-                android:background="@drawable/facebook"
-                android:id="@+id/face"/>
+            android:orientation="vertical"
+            android:layout_margin="16dp">
 
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/instagram"
-                android:id="@+id/insta"/>
+            <TextView
+                android:id="@+id/event_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="title"
+                android:textColor="@color/colorPrimary"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/web_site"
-                android:id="@+id/web_site"/>
 
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:id="@+id/event_desc"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="Et voluptates quidem sunt est. Dolorem expedita libero et nemo reiciendis sint atque minima. Vitae ipsam vero quia impedit qui nihil dolorum. Impedit rerum consequatur iusto velit reiciendis ad vel."/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/secondaryButtomGreyLighten"
+                    />
             <fragment
                 android:id="@+id/map"
-                android:layout_width="200dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginLeft="40dp"
+                android:layout_width="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:layout_height="200dp"
                 class="com.google.android.gms.maps.SupportMapFragment" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_marginTop="28dp"
-                android:layout_marginLeft="12dp"
+            <LinearLayout
                 android:layout_width="wrap_content"
+                android:layout_gravity="center"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="12dp"
-                android:text="Inicio: 2012-07-07"/>
+                android:id="@+id/social_media">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/facebook"
+                    android:id="@+id/face"/>
 
-            <TextView
-                android:layout_marginTop="28dp"
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/instagram"
+                    android:id="@+id/insta"/>
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/web_site"
+                    android:id="@+id/web_site"/>
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fim : 2012-07-07"/>
-        </LinearLayout>
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/start_date"
+                    android:layout_marginTop="28dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="12dp"
+                    android:text="Inicio: 2012-07-07"/>
+
+                <TextView
+                    android:id="@+id/end_date"
+                    android:layout_marginTop="28dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fim : 2012-07-07"/>
+            </LinearLayout>
 
         </LinearLayout>
+    </LinearLayout>
 
+        </LinearLayout>
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>

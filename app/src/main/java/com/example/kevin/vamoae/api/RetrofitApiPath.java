@@ -1,6 +1,7 @@
 package com.example.kevin.vamoae.api;
 
 import com.example.kevin.vamoae.model.EventsResponse;
+import com.example.kevin.vamoae.model.LikeResponse;
 import com.example.kevin.vamoae.model.UserLoginResponse;
 import com.example.kevin.vamoae.model.UserRegisterResponse;
 
@@ -35,9 +36,9 @@ public interface RetrofitApiPath {
 
     @FormUrlEncoded
     @POST("like")
-    Call <UserLoginResponse> sendLike(@FieldMap Map<String,String> registerData);
+    Call <LikeResponse> sendLike(@FieldMap Map<String,String> registerData);
 
     @FormUrlEncoded
     @POST("deslike")
-    Call <UserLoginResponse> sendDeslike(@FieldMap Map<String,String> registerData);
+    Call <LikeResponse> sendDeslike(@FieldMap Map<String,String> registerData);
 }
