@@ -1,14 +1,19 @@
 package com.example.kevin.vamoae.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
 
 import com.example.kevin.vamoae.R;
+import com.example.kevin.vamoae.Utils.UserSingleton;
 import com.example.kevin.vamoae.adapter.EventListAdapter;
 import com.example.kevin.vamoae.api.RetrofitInitializer;
 import com.example.kevin.vamoae.model.Events;
@@ -22,7 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EventLobbyActivity extends AppCompatActivity {
+public class EventLobbyActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     @BindView(R.id.recycler_event_list)
     RecyclerView recyclerEvent;
@@ -30,6 +35,8 @@ public class EventLobbyActivity extends AppCompatActivity {
     @BindView(R.id.loading_view)
     LinearLayout loadingView;
 
+    @BindView(R.id.swipe_container)
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     private  LinearLayoutManager layoutManager;
     private int page = 1;
@@ -49,11 +56,17 @@ public class EventLobbyActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         getEvents();
+
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                R.color.colorPrimaryDark,
+                R.color.colorAccent);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -88,7 +101,56 @@ public class EventLobbyActivity extends AppCompatActivity {
 //
             }
         });
+
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        UserSingleton userData = UserSingleton.getInstance();
+        String token = userData.getToken();
+        if (token == null){
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_log, menu);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_login: {
+                Intent i = new Intent(this, MainActivity.class);
+                startActivityForResult(i,2);
+            }
+                break;
+            case R.id.action_create:{
+                Intent i = new Intent(this, SignInActivity.class);
+                startActivityForResult(i, 2);
+                break;
+            }
+            case R.id.action_logout: {
+                UserSingleton userData = UserSingleton.getInstance();
+                userData.logout();
+                Intent i = new Intent(this, IntroActivity.class);
+                startActivity(i);
+                break;
+            }
+            case android.R.id.home: {
+                finish();
+                break;
+            }
+
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+    }
+
 
     public void setRecycler(){
         layoutManager = new LinearLayoutManager(EventLobbyActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -120,6 +182,11 @@ public class EventLobbyActivity extends AppCompatActivity {
 
             }
         });
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public void onRefresh() {
+        getEvents();
+    }
 }

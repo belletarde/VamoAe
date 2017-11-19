@@ -47,7 +47,7 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                 .placeholder( R.drawable.bg_img_loading ).into(holder.imgEvent);
         holder.title.setText(event.getName());
         holder.detail.setText(event.getCity()+" - "+event.getUf());
-        holder.score.setText("total: "+ (event.getLike() - event.getDeslike()));
+        holder.score.setText(""+ (event.getLike() - event.getDeslike()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,15 +67,22 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(token != null){
-                    likeData.put("id",event.getId());
-                    likeData.put("like","1");
-                    likeData.put("api_token",token);
 
-                    likeOrDeslike.likeCall("like",likeData,context,holder.score);
+                if(token != null ){
+                    if(alreadyLiked(userData.getLiked(), event.getId()) == false) {
+                        likeData.put("id", event.getId());
+                        likeData.put("liked", "1");
+                        likeData.put("api_token", token);
+                        userData.setLiked(event.getId(), "like");
+                        likeOrDeslike.likeCall("like", likeData, context, holder.score);
 
+                        setLiked(holder.like, holder.deslike, "like");
+                    }else {
+                        Toast.makeText(context, "Ja deu like", Toast.LENGTH_SHORT).show();
+                    }
                 }else {
-                    Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Você precisa estar logado para dar like.", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
@@ -83,16 +90,46 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         holder.deslike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(token != null){
+
+                if(token != null && alreadyLiked(userData.getLiked(), event.getId()) == false){
                     likeData.put("id",event.getId());
                     likeData.put("deslike","1");
                     likeData.put("api_token",token);
+                    userData.setLiked(event.getId(),"deslike");
                     likeOrDeslike.likeCall("deslike",likeData,context,holder.score);
+
+
+                    setLiked(holder.like,holder.deslike, "deslike");
                 }else {
-                    Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
+                    if(token == null){
+                        Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(context, "Ja deu deslike", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
+    }
+    public boolean alreadyLiked(HashMap<String, String> liked, String id){
+        if (liked.size() > 0) {
+            for (int i = 0; i<liked.size(); i++){
+                if (liked.containsKey(id)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void setLiked(ImageView liked, ImageView desliked, String like) {
+        liked.setEnabled(false);
+        desliked.setEnabled(false);
+        if (like == "like") {
+            liked.setImageResource(R.drawable.ic_action_like_pressed);
+
+        }else {
+            desliked.setImageResource(R.drawable.ic_deslike_pressed);
+        }
     }
 
     @Override

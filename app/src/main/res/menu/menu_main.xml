@@ -2,27 +2,26 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_share"
+        android:id="@+id/action_filter"
         android:title="share"
-        android:icon="@drawable/ic_action_share"
+        android:icon="@drawable/ic_action_settings"
         android:orderInCategory="100"
         app:showAsAction="ifRoom"
          />
     <item
         android:id="@+id/action_login"
         android:title="Login"
-
         />
 
     <item
         android:id="@+id/action_create"
         android:title="Cadastre-se"
-
         />
 
     <item
         android:id="@+id/action_logout"
         android:title="Sair"
+        android:icon="@drawable/ic_action_user_main"
         android:visible="false"
         />
 </menu>

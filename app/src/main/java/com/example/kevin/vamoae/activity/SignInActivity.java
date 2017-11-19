@@ -3,6 +3,7 @@ package com.example.kevin.vamoae.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -37,6 +38,18 @@ public class SignInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         ButterKnife.bind(this);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:{
+                finish();
+            }
+        }
+        return true;
     }
 
     @OnClick(R.id.btn_send_register)

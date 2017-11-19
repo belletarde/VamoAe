@@ -88,8 +88,13 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_items, menu);
-
+        UserSingleton userData = UserSingleton.getInstance();
+        String token = userData.getToken();
+        if (token == null){
+            getMenuInflater().inflate(R.menu.menu_items, menu);
+        }else {
+            getMenuInflater().inflate(R.menu.menu_items_log, menu);
+        }
         return true;
     }
 
@@ -98,6 +103,26 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
         switch (item.getItemId()){
             case R.id.action_share:{
                shareEvent();
+                break;
+            }
+            case android.R.id.home:{
+                finish();
+                break;
+            } case R.id.action_login: {
+                Intent i = new Intent(this, MainActivity.class);
+                startActivityForResult(i,2);
+            }
+            break;
+            case R.id.action_create:{
+                Intent i = new Intent(this, SignInActivity.class);
+                startActivityForResult(i, 2);
+                break;
+            }
+            case R.id.action_logout: {
+                UserSingleton userData = UserSingleton.getInstance();
+                userData.logout();
+                Intent i = new Intent(this, IntroActivity.class);
+                startActivity(i);
                 break;
             }
         }
@@ -184,9 +209,9 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
                         lat = -23.5505199;
                         longi = -46.63330939999999;
                     }
-                    SupportMapFragment mapFragment =
-                            (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-                    mapFragment.getMapAsync(EventDetailActivity.this);
+//                    SupportMapFragment mapFragment =
+//                            (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+//                    mapFragment.getMapAsync(EventDetailActivity.this);
                 }else {
                     Toast.makeText(EventDetailActivity.this, "Erro em conectar com google", Toast.LENGTH_SHORT).show();
                 }
