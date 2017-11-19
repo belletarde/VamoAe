@@ -20,6 +20,7 @@ import com.example.kevin.vamoae.model.Events;
 import com.example.kevin.vamoae.model.EventsResponse;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,7 +43,7 @@ public class EventLobbyActivity extends AppCompatActivity implements SwipeRefres
     private int page = 1;
     private int maxPage;
     private EventListAdapter adapter;
-    private ArrayList<Events> events = new ArrayList<>();
+    private List<Events> events = new ArrayList<>();
     private boolean loading = true;
     private int previousTotal = 0;
     int visibleThreshold = 1;
@@ -168,7 +169,7 @@ public class EventLobbyActivity extends AppCompatActivity implements SwipeRefres
                 recyclerEvent.setVisibility(View.VISIBLE);
                 setRecycler();
 
-                events.addAll(response.body().getEventsList());
+                events = response.body().getEventsList();
                 if(page == 1) {
                     setEventList();
                 }
@@ -185,8 +186,13 @@ public class EventLobbyActivity extends AppCompatActivity implements SwipeRefres
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    private void getEvents(int page){
+        this.page = page;
+        getEvents();
+    }
+
     @Override
     public void onRefresh() {
-        getEvents();
+        getEvents(1);
     }
 }

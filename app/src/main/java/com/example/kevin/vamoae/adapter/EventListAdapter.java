@@ -58,6 +58,13 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             }
         });
 
+        if (getAlreadyLiked(event.getId()) == "like"){
+            holder.like.setImageResource(R.drawable.ic_action_like_pressed);
+
+        }else if (getAlreadyLiked(event.getId()) == "deslike"){
+            holder.deslike.setImageResource(R.drawable.ic_deslike_pressed);
+        }
+
         final HashMap<String,String> likeData = new HashMap<>();
         final UserSingleton userData = UserSingleton.getInstance();
         final String token = userData.getToken();
@@ -130,6 +137,21 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         }else {
             desliked.setImageResource(R.drawable.ic_deslike_pressed);
         }
+    }
+
+    public String getAlreadyLiked(String id){
+        UserSingleton userData = UserSingleton.getInstance();
+        HashMap<String, String> likes = userData.getLiked();
+        for (int i = 0; i<likes.size(); i++){
+            if (likes.containsKey(id)){
+                if (likes.get(id) == "like"){
+                    return "like";
+                }else if(likes.get(id) == "deslike") {
+                    return "deslike";
+                }
+            }
+        }
+        return "nul";
     }
 
     @Override
