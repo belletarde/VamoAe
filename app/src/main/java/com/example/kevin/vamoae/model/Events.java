@@ -23,9 +23,6 @@ public class Events {
     @SerializedName("UF")
     @Expose
     private String uf;
-    @SerializedName("like")
-    @Expose
-    private int like;
     @SerializedName("deslike")
     @Expose
     private int deslike;
@@ -85,14 +82,6 @@ public class Events {
 
     public void setUf(String uf) {
         this.uf = uf;
-    }
-
-    public int getLike() {
-        return like;
-    }
-
-    public void setLike(int like) {
-        this.like = like;
     }
 
     public int getDeslike() {

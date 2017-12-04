@@ -2,6 +2,8 @@ package com.example.kevin.vamoae.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -28,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EventLobbyActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class EventLobbyActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.recycler_event_list)
     RecyclerView recyclerEvent;
@@ -64,11 +66,6 @@ public class EventLobbyActivity extends AppCompatActivity implements SwipeRefres
                 R.color.colorAccent);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
 
     @Override
     public void onStop() {
@@ -194,5 +191,16 @@ public class EventLobbyActivity extends AppCompatActivity implements SwipeRefres
     @Override
     public void onRefresh() {
         getEvents(1);
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }

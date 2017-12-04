@@ -1,15 +1,17 @@
 package com.example.kevin.vamoae.activity;
 
+/**
+ * Created by felix on 03/12/2017.
+ */
+
+
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +28,6 @@ import com.example.kevin.vamoae.api.RetrofithGoogleApi;
 import com.example.kevin.vamoae.model.Events;
 import com.example.kevin.vamoae.model.EventsResponse;
 import com.example.kevin.vamoae.model.GoogleMapModel;
-import com.example.kevin.vamoae.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,7 +35,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.HashMap;
 
@@ -45,19 +45,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EventDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
-
-    @BindView(R.id.event_title)
-    TextView eventTitle;
+public class EventDetail extends AppCompatActivity implements OnMapReadyCallback {
+//    @BindView(R.id.event_title)
+//    TextView eventTitle;
 
     @BindView(R.id.loading_view_detail)
     LinearLayout loadingView;
 
     @BindView(R.id.layout_detail_content)
     LinearLayout mContent;
-
-    @BindView(R.id.img_list_event)
-    ImageView imgBitMap;
 
     @BindView(R.id.event_desc)
     TextView descEvent;
@@ -68,14 +64,35 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
     @BindView(R.id.end_date)
     TextView endDate;
 
+    @BindView(R.id.backdrop)
+    ImageView backdrop;
+
+    @BindView(R.id.insta)
+    ImageView instagram;
+
+    @BindView(R.id.face)
+    ImageView faceBook;
+
+    @BindView(R.id.web_site)
+    ImageView WebSite;
+
+    @BindView(R.id.img_total_score)
+    ImageView likeImag;
+
+    @BindView(R.id.txt_like_number_list_event)
+    TextView numberTotalOfLikes;
+
     private String faceLink, instaLink, siteLink;
     private double lat, longi;
     private String id;
 
+    public static final String EXTRA_NAME = "cheese_name";
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_event_detail);
+        setContentView(R.layout.activity_detail);
+
         ButterKnife.bind(this);
 
 
@@ -83,8 +100,21 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
 
+
+        Intent intent = getIntent();
+        final String cheeseName = intent.getStringExtra(EXTRA_NAME);
+
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        CollapsingToolbarLayout collapsingToolbar =
+                findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar.setTitle(cheeseName);
+
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,7 +132,7 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_share:{
-               shareEvent();
+                shareEvent();
                 break;
             }
             case android.R.id.home:{
@@ -140,6 +170,7 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
         super.onStart();
         Intent i = getIntent();
         id = i.getStringExtra("id");
+
         if (id != null) {
             getEventDetail();
         }
@@ -147,18 +178,35 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void setEventDetail(Events eventDetail) {
-        eventTitle.setText(eventDetail.getName().toUpperCase());
+//        eventTitle.setText(eventDetail.getName().toUpperCase());
         descEvent.setText(eventDetail.getDescEvent());
         startDate.setText(eventDetail.getStartDate());
         endDate.setText(eventDetail.getFinalDate());
         Picasso.with(this).load(eventDetail.getImg()).error( R.drawable.bg_img_404 )
-                .placeholder( R.drawable.bg_img_loading ).into(imgBitMap);
+                .placeholder( R.drawable.bg_img_loading ).into(backdrop);
 
+
+         if(eventDetail.getFacebook() == null || eventDetail.getFacebook().trim().isEmpty() ) {
+             faceBook.setVisibility(View.GONE);
+         }
+        if(eventDetail.getSite() == null || eventDetail.getSite().trim().isEmpty() ) {
+            WebSite.setVisibility(View.GONE);
+        }
+        if(eventDetail.getInstagram() == null || eventDetail.getInstagram().trim().isEmpty() ) {
+            instagram.setVisibility(View.GONE);
+        }
         faceLink = eventDetail.getFacebook();
         instaLink = eventDetail.getInstagram();
         siteLink = eventDetail.getSite();
+        int score = (eventDetail.getLiked() - eventDetail.getDeslike());
+        numberTotalOfLikes.setText(""+score);
+        if(score > 0){
+            likeImag.setImageResource(R.drawable.ic_action_like_pressed);
 
-
+        }else {
+            likeImag.setImageResource(R.drawable.ic_deslike_pressed);
+            likeImag.setRotation(180);
+        }
         String address = eventDetail.getAddress()+
                 " "+eventDetail.getAddressNumber()+
                 " "+eventDetail.getDistrict()+
@@ -181,7 +229,7 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
                 if (response.code() == 200) {
                     setEventDetail(response.body().getEventDetail());
                 } else {
-                    Toast.makeText(EventDetailActivity.this, "Erro inesperado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EventDetail.this, "Erro inesperado", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -189,7 +237,7 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
             @Override
             public void onFailure(Call<EventsResponse> call, Throwable t) {
                 loadingView.setVisibility(View.GONE);
-                Toast.makeText(EventDetailActivity.this, "Problemas com a conexão", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EventDetail.this, "Problemas com a conexão", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -209,11 +257,11 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
                         lat = -23.5505199;
                         longi = -46.63330939999999;
                     }
-//                    SupportMapFragment mapFragment =
-//                            (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-//                    mapFragment.getMapAsync(EventDetailActivity.this);
+                    SupportMapFragment mapFragment =
+                            (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                    mapFragment.getMapAsync(EventDetail.this);
                 }else {
-                    Toast.makeText(EventDetailActivity.this, "Erro em conectar com google", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EventDetail.this, "Erro em conectar com google", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -251,19 +299,35 @@ public class EventDetailActivity extends AppCompatActivity implements OnMapReady
         startActivity(Intent.createChooser(shareIntent, "Share link using"));
     }
 
+//    @OnClick(R.id.float_share_btn)
+//     public void onShareClick(){
+//        shareEvent();
+//    }
     @OnClick(R.id.insta)
     public void onInstaClick(){
-        Toast.makeText(this, instaLink, Toast.LENGTH_SHORT).show();
+        if (!instaLink.startsWith("http://") && !instaLink.startsWith("https://")) instaLink = "http://" + instaLink;
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(instaLink));
+        startActivity(i);
     }
 
     @OnClick(R.id.face)
     public void onFaceClick(){
-        Toast.makeText(this, faceLink, Toast.LENGTH_SHORT).show();
+
+        if (!faceLink.startsWith("http://") && !faceLink.startsWith("https://")) faceLink = "http://" + faceLink;
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(faceLink));
+        startActivity(i);
     }
 
     @OnClick(R.id.web_site)
     public void onWebSiteClick(){
-        Toast.makeText(this, siteLink, Toast.LENGTH_SHORT).show();
+        if (!siteLink.startsWith("http://") && !siteLink.startsWith("https://")) siteLink = "http://" + siteLink;
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(siteLink));
+        startActivity(i);
+
     }
 
 }
+

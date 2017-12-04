@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.example.kevin.vamoae.R;
 import com.example.kevin.vamoae.Utils.UserSingleton;
-import com.example.kevin.vamoae.activity.EventDetailActivity;
+import com.example.kevin.vamoae.activity.EventDetail;
 import com.example.kevin.vamoae.api.RetrofitApiCall.LikeAndDeslikeApiCall;
 import com.example.kevin.vamoae.model.Events;
 import com.squareup.picasso.Picasso;
@@ -47,22 +47,19 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                 .placeholder( R.drawable.bg_img_loading ).into(holder.imgEvent);
         holder.title.setText(event.getName());
         holder.detail.setText(event.getCity()+" - "+event.getUf());
-        holder.score.setText(""+ (event.getLike() - event.getDeslike()));
+        holder.score.setText(""+ (event.getLiked() - event.getDeslike()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(context, EventDetailActivity.class);
+                Intent i = new Intent(context, EventDetail.class);
                 i.putExtra("id", event.getId());
+                i.putExtra("cheese_name", event.getName());
                 context.startActivity(i);
             }
         });
-
-        if (getAlreadyLiked(event.getId()) == "like"){
-            holder.like.setImageResource(R.drawable.ic_action_like_pressed);
-
-        }else if (getAlreadyLiked(event.getId()) == "deslike"){
-            holder.deslike.setImageResource(R.drawable.ic_deslike_pressed);
+        if(event.getLiked() - event.getDeslike() < 0){
+            holder.imgTotal.setRotation(180);
         }
 
         final HashMap<String,String> likeData = new HashMap<>();
@@ -75,22 +72,21 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             @Override
             public void onClick(View view) {
 
-                if(token != null ){
-                    if(alreadyLiked(userData.getLiked(), event.getId()) == false) {
-                        likeData.put("id", event.getId());
-                        likeData.put("liked", "1");
-                        likeData.put("api_token", token);
-                        userData.setLiked(event.getId(), "like");
-                        likeOrDeslike.likeCall("like", likeData, context, holder.score);
+            if(token != null && alreadyLiked(userData.getLiked(), event.getId()) == false){
+                    likeData.put("id", event.getId());
+                    likeData.put("liked", "1");
+                    likeData.put("api_token", token);
+                    userData.setLiked(event.getId(), "like");
+                    likeOrDeslike.likeCall("like", likeData, context, holder.score);
 
-                        setLiked(holder.like, holder.deslike, "like");
-                    }else {
-                        Toast.makeText(context, "Ja deu like", Toast.LENGTH_SHORT).show();
-                    }
-                }else {
+            }else {
+                if(token == null){
                     Toast.makeText(context, "Você precisa estar logado para dar like.", Toast.LENGTH_SHORT).show();
-
+                }else {
+                    Toast.makeText(context, "Você ja avaliou este evento.", Toast.LENGTH_SHORT).show();
                 }
+
+            }
             }
         });
 
@@ -104,20 +100,17 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
                     likeData.put("api_token",token);
                     userData.setLiked(event.getId(),"deslike");
                     likeOrDeslike.likeCall("deslike",likeData,context,holder.score);
-
-
-                    setLiked(holder.like,holder.deslike, "deslike");
                 }else {
                     if(token == null){
                         Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
                     }else {
-                        Toast.makeText(context, "Ja deu deslike", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Você ja avaliou este evento.", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
         });
     }
-    public boolean alreadyLiked(HashMap<String, String> liked, String id){
+    public boolean alreadyLiked(HashMap<String, String> liked, String id ){
         if (liked.size() > 0) {
             for (int i = 0; i<liked.size(); i++){
                 if (liked.containsKey(id)){
@@ -128,31 +121,6 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         return false;
     }
 
-    public void setLiked(ImageView liked, ImageView desliked, String like) {
-        liked.setEnabled(false);
-        desliked.setEnabled(false);
-        if (like == "like") {
-            liked.setImageResource(R.drawable.ic_action_like_pressed);
-
-        }else {
-            desliked.setImageResource(R.drawable.ic_deslike_pressed);
-        }
-    }
-
-    public String getAlreadyLiked(String id){
-        UserSingleton userData = UserSingleton.getInstance();
-        HashMap<String, String> likes = userData.getLiked();
-        for (int i = 0; i<likes.size(); i++){
-            if (likes.containsKey(id)){
-                if (likes.get(id) == "like"){
-                    return "like";
-                }else if(likes.get(id) == "deslike") {
-                    return "deslike";
-                }
-            }
-        }
-        return "nul";
-    }
 
     @Override
     public int getItemCount() {
@@ -178,6 +146,9 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
 
         @BindView(R.id.txt_like_number_list_event)
         TextView score;
+
+        @BindView(R.id.img_total_score)
+        ImageView imgTotal;
 
         public ViewHolder(View itemView) {
             super(itemView);
