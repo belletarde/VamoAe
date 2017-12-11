@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="16dp"
+    android:id="@+id/myConstraint"
     tools:context="com.example.kevin.vamoae.activity.EventLobbyActivity">
 
     <LinearLayout
@@ -38,12 +38,15 @@
         android:id="@+id/swipe_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <android.support.v7.widget.RecyclerView
+
+        <ListView
             android:id="@+id/recycler_event_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
-            /></android.support.v4.widget.SwipeRefreshLayout>
+            />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 
 

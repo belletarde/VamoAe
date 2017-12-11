@@ -1,5 +1,8 @@
 package com.example.kevin.vamoae.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -7,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by felix on 04/11/2017.
  */
 
-public class Events {
+public class Events  {
     @SerializedName("id")
     @Expose
     private String id;
@@ -221,4 +224,5 @@ public class Events {
     public void setDistrict(String district) {
         this.district = district;
     }
+
 }

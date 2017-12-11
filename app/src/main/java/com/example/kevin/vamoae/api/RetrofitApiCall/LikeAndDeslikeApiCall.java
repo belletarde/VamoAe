@@ -6,9 +6,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.kevin.vamoae.R;
 import com.example.kevin.vamoae.Utils.UserSingleton;
 import com.example.kevin.vamoae.api.RetrofitInitializer;
 import com.example.kevin.vamoae.model.LikeResponse;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class LikeAndDeslikeApiCall {
         user.setLiked(eventId, likeOrDeslike);
     }
 
-    public void likeCall(String likeOrDeslike, final Map<String, String> likeOrDeslikeData, final Context mActivity, final TextView score) {
+    public void likeCall(String likeOrDeslike, final Map<String, String> likeOrDeslikeData, final Context mActivity, final TextView score, final ImageView dlike) {
 
             retrofit2.Call<LikeResponse> call;
             if (likeOrDeslike == "like") {
@@ -55,6 +57,11 @@ public class LikeAndDeslikeApiCall {
                             int mScore = like + (dLike * -1);
                             score.setText("" + mScore);
                             setLikeData(likeOrDeslikeData.get("id"),likedDisliked);
+                            if (likedDisliked == "like") {
+                                Picasso.with(mActivity).load(R.drawable.ic_action_deslike ).into(dlike);
+                            } else if (likedDisliked == "deslike") {
+                                Picasso.with(mActivity).load(R.drawable.ic_action_like_pressed ).into(dlike);
+                            }
                             break;
                         }
                         default: {

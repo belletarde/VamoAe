@@ -2,7 +2,9 @@ package com.example.kevin.vamoae.Utils;
 
 import com.example.kevin.vamoae.activity.EventLobbyActivity;
 import com.example.kevin.vamoae.activity.MainActivity;
+import com.example.kevin.vamoae.model.Events;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -12,9 +14,19 @@ public class UserSingleton {
 
     private String token;
     private HashMap<String,String> liked = new HashMap<>();
-
+    private ArrayList<Events> events = new ArrayList<>();
     public HashMap<String,String> getLiked(){
         return liked;
+    }
+
+    public void setEvents(Events event1, Events event2, Events event3) {
+        events.add(event1);
+        events.add(event2);
+        events.add(event3);
+    }
+
+    public ArrayList<Events> getEvents () {
+        return events;
     }
 
     public void setLiked(String key, String value){

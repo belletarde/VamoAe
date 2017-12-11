@@ -8,9 +8,12 @@ package com.example.kevin.vamoae.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 import com.example.kevin.vamoae.Manifest;
 import com.example.kevin.vamoae.R;
 import com.example.kevin.vamoae.Utils.UserSingleton;
+import com.example.kevin.vamoae.adapter.EventListAdapter;
 import com.example.kevin.vamoae.api.RetrofitInitializer;
 import com.example.kevin.vamoae.api.RetrofithGoogleApi;
 import com.example.kevin.vamoae.model.Events;
@@ -36,6 +40,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -46,8 +51,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class EventDetail extends AppCompatActivity implements OnMapReadyCallback {
-//    @BindView(R.id.event_title)
-//    TextView eventTitle;
+    @BindView(R.id.recycler_event_detail_list)
+    RecyclerView recyclerEvent;
 
     @BindView(R.id.loading_view_detail)
     LinearLayout loadingView;
@@ -85,6 +90,7 @@ public class EventDetail extends AppCompatActivity implements OnMapReadyCallback
     private String faceLink, instaLink, siteLink;
     private double lat, longi;
     private String id;
+    private  String cheeseName;
 
     public static final String EXTRA_NAME = "cheese_name";
 
@@ -100,9 +106,18 @@ public class EventDetail extends AppCompatActivity implements OnMapReadyCallback
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
 
+        UserSingleton user = UserSingleton.getInstance();
+        if (user.getEvents().size() > 0){
+            LinearLayoutManager layoutManager = new LinearLayoutManager(EventDetail.this, LinearLayoutManager.HORIZONTAL, false);
+            recyclerEvent.setLayoutManager(layoutManager);
+            recyclerEvent.setNestedScrollingEnabled(false);
+            EventListAdapter adapter = new EventListAdapter(EventDetail.this, user.getEvents());
+            recyclerEvent.setAdapter(adapter);
+            recyclerEvent.setVisibility(View.VISIBLE);
 
+        }
         Intent intent = getIntent();
-        final String cheeseName = intent.getStringExtra(EXTRA_NAME);
+        cheeseName = intent.getStringExtra(EXTRA_NAME);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -111,6 +126,7 @@ public class EventDetail extends AppCompatActivity implements OnMapReadyCallback
         CollapsingToolbarLayout collapsingToolbar =
                 findViewById(R.id.collapsing_toolbar);
         collapsingToolbar.setTitle(cheeseName);
+
 
 
     }
@@ -185,19 +201,14 @@ public class EventDetail extends AppCompatActivity implements OnMapReadyCallback
         Picasso.with(this).load(eventDetail.getImg()).error( R.drawable.bg_img_404 )
                 .placeholder( R.drawable.bg_img_loading ).into(backdrop);
 
+        ifExists(eventDetail.getFacebook(),faceBook);
+        ifExists(eventDetail.getSite(),WebSite);
+        ifExists(eventDetail.getInstagram(),instagram);
 
-         if(eventDetail.getFacebook() == null || eventDetail.getFacebook().trim().isEmpty() ) {
-             faceBook.setVisibility(View.GONE);
-         }
-        if(eventDetail.getSite() == null || eventDetail.getSite().trim().isEmpty() ) {
-            WebSite.setVisibility(View.GONE);
-        }
-        if(eventDetail.getInstagram() == null || eventDetail.getInstagram().trim().isEmpty() ) {
-            instagram.setVisibility(View.GONE);
-        }
         faceLink = eventDetail.getFacebook();
         instaLink = eventDetail.getInstagram();
         siteLink = eventDetail.getSite();
+
         int score = (eventDetail.getLiked() - eventDetail.getDeslike());
         numberTotalOfLikes.setText(""+score);
         if(score > 0){
@@ -282,14 +293,13 @@ public class EventDetail extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng sydney = new LatLng(lat, longi);
+        LatLng eventLocal = new LatLng(lat, longi);
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLocal, 13));
 
         map.addMarker(new MarkerOptions()
-                .title("Sydney")
-                .snippet("The most populous city in Australia.")
-                .position(sydney));
+                .title(cheeseName)
+                .position(eventLocal));
     }
 
     public void shareEvent() {
@@ -327,6 +337,12 @@ public class EventDetail extends AppCompatActivity implements OnMapReadyCallback
         i.setData(Uri.parse(siteLink));
         startActivity(i);
 
+    }
+
+    private void ifExists(String social, ImageView socialImgLink){
+        if(social == null || social.trim().isEmpty() ) {
+            socialImgLink.setVisibility(View.GONE);
+        }
     }
 
 }

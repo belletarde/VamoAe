@@ -49,6 +49,8 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
         holder.detail.setText(event.getCity()+" - "+event.getUf());
         holder.score.setText(""+ (event.getLiked() - event.getDeslike()));
 
+        holder.like.setVisibility(View.GONE);
+        holder.deslike.setVisibility(View.GONE);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,64 +64,10 @@ public class EventListAdapter extends RecyclerView.Adapter<EventListAdapter.View
             holder.imgTotal.setRotation(180);
         }
 
-        final HashMap<String,String> likeData = new HashMap<>();
-        final UserSingleton userData = UserSingleton.getInstance();
-        final String token = userData.getToken();
 
-        final LikeAndDeslikeApiCall likeOrDeslike = new LikeAndDeslikeApiCall();
 
-        holder.like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            if(token != null && alreadyLiked(userData.getLiked(), event.getId()) == false){
-                    likeData.put("id", event.getId());
-                    likeData.put("liked", "1");
-                    likeData.put("api_token", token);
-                    userData.setLiked(event.getId(), "like");
-                    likeOrDeslike.likeCall("like", likeData, context, holder.score);
-
-            }else {
-                if(token == null){
-                    Toast.makeText(context, "Você precisa estar logado para dar like.", Toast.LENGTH_SHORT).show();
-                }else {
-                    Toast.makeText(context, "Você ja avaliou este evento.", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-            }
-        });
-
-        holder.deslike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(token != null && alreadyLiked(userData.getLiked(), event.getId()) == false){
-                    likeData.put("id",event.getId());
-                    likeData.put("deslike","1");
-                    likeData.put("api_token",token);
-                    userData.setLiked(event.getId(),"deslike");
-                    likeOrDeslike.likeCall("deslike",likeData,context,holder.score);
-                }else {
-                    if(token == null){
-                        Toast.makeText(context, "Você precisa estar logado para dar deslike.", Toast.LENGTH_SHORT).show();
-                    }else {
-                        Toast.makeText(context, "Você ja avaliou este evento.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
     }
-    public boolean alreadyLiked(HashMap<String, String> liked, String id ){
-        if (liked.size() > 0) {
-            for (int i = 0; i<liked.size(); i++){
-                if (liked.containsKey(id)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+
 
 
     @Override

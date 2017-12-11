@@ -7,4 +7,5 @@
     <color name="secondaryButtomGreyLighten">#bdbdbd</color>
     <color name="black">#000</color>
     <color name="txtLightColor">#ffffff</color>
+    <color name="payment">#ffffac</color>
 </resources>
