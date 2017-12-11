@@ -58,9 +58,9 @@ public class LikeAndDeslikeApiCall {
                             score.setText("" + mScore);
                             setLikeData(likeOrDeslikeData.get("id"),likedDisliked);
                             if (likedDisliked == "like") {
-                                Picasso.with(mActivity).load(R.drawable.ic_action_deslike ).into(dlike);
-                            } else if (likedDisliked == "deslike") {
                                 Picasso.with(mActivity).load(R.drawable.ic_action_like_pressed ).into(dlike);
+                            } else if (likedDisliked == "deslike") {
+                                Picasso.with(mActivity).load(R.drawable.ic_action_deslike ).into(dlike);
                             }
                             break;
                         }
