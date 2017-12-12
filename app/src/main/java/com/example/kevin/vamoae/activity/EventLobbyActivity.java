@@ -86,6 +86,11 @@ public class EventLobbyActivity extends AppCompatActivity implements SwipeRefres
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getEvents();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
